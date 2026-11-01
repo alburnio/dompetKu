@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="ms" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet Ajaib 3.0 - Pengurusan Kewangan Peribadi</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        emerald: { 50: '#ecfdf5', 100: '#d1fae5', 500: '#10b981', 600: '#059669', 700: '#047857', 800: '#065f46', 900: '#064e3b' },
+                        charcoal: { 800: '#1f2937', 900: '#111827', 950: '#0b0f19' },
+                        cream: '#fefcf6',
+                        gold: '#d97706',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-charcoal-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col md:flex-row transition-colors duration-300">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2"></div>
+
+    <!-- SIDEBAR (Desktop) -->
+    <aside class="hidden md:flex flex-col w-64 bg-white dark:bg-charcoal-900 border-r border-slate-200 dark:border-slate-800 p-5 sticky top-0 h-screen overflow-y-auto">
+        <div class="flex items-center gap-3 mb-8">
+            <div class="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-emerald-600/30">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg leading-tight">WALLET AJAIB</h1>
+                <span class="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Ver 3.0 QA Verified</span>
+            </div>
+        </div>
+
+        <nav class="space-y-1.5 flex-1">
+            <button onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 dark:text-emerald-400" data-tab="dashboard">
+                <i class="fa-solid fa-chart-pie w-5"></i> Dashboard Utama
+            </button>
+            <button onclick="switchTab('pendapatan')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800" data-tab="pendapatan">
+                <i class="fa-solid fa-arrow-trend-up w-5"></i> Pendapatan
+            </button>
+            <button onclick="switchTab('perbelanjaan')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800" data-tab="perbelanjaan">
+                <i class="fa-solid fa-arrow-trend-down w-5"></i> Perbelanjaan & Bajet
+            </button>
+            <button onclick="switchTab('hutang')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800" data-tab="hutang">
+                <i class="fa-solid fa-file-invoice-dollar w-5"></i> Pengurusan Hutang
+            </button>
+            <button onclick="switchTab('tunggakan')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800" data-tab="tunggakan">
+                <i class="fa-solid fa-triangle-exclamation w-5"></i> Tunggakan
+            </button>
+            <button onclick="switchTab('komitmen')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800" data-tab="komitmen">
+                <i class="fa-solid fa-calendar-check w-5"></i> Komitmen Bulanan
+            </button>
+            <button onclick="switchTab('simpanan')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800" data-tab="simpanan">
+                <i class="fa-solid fa-vault w-5"></i> Simpanan & Gamifikasi
+            </button>
+            <button onclick="switchTab('impian')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800" data-tab="impian">
+                <i class="fa-solid fa-rainbow w-5"></i> Impian & Perancangan
+            </button>
+            <button onclick="switchTab('ai')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800" data-tab="ai">
+                <i class="fa-solid fa-robot w-5 text-emerald-500"></i> AI Wallet
+            </button>
+            <button onclick="switchTab('kalendar')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800" data-tab="kalendar">
+                <i class="fa-solid fa-calendar-days w-5"></i> Kalendar Bayaran
+            </button>
+            <button onclick="switchTab('laporan')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800" data-tab="laporan">
+                <i class="fa-solid fa-chart-line w-5"></i> Laporan & Kesihatan
+            </button>
+            <button onclick="switchTab('tetapan')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800" data-tab="tetapan">
+                <i class="fa-solid fa-gear w-5"></i> Tetapan & Backup
+            </button>
+        </nav>
+
+        <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-500">Mod Gelap</span>
+            <button onclick="toggleDarkMode()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                <i class="fa-solid fa-moon dark:hidden"></i>
+                <i class="fa-solid fa-sun hidden dark:inline"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MOBILE BOTTOM NAVIGATION -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-charcoal-900 border-t border-slate-200 dark:border-slate-800 z-40 flex justify-around p-2">
+        <button onclick="switchTab('dashboard')" class="mobile-nav-btn flex flex-col items-center p-2 text-emerald-600 dark:text-emerald-400 text-xs" data-tab="dashboard"><i class="fa-solid fa-chart-pie text-lg"></i>Dashboard</button>
+        <button onclick="switchTab('perbelanjaan')" class="mobile-nav-btn flex flex-col items-center p-2 text-slate-500 text-xs" data-tab="perbelanjaan"><i class="fa-solid fa-arrow-trend-down text-lg"></i>Belanja</button>
+        <button onclick="switchTab('simpanan')" class="mobile-nav-btn flex flex-col items-center p-2 text-slate-500 text-xs" data-tab="simpanan"><i class="fa-solid fa-vault text-lg"></i>Simpanan</button>
+        <button onclick="switchTab('impian')" class="mobile-nav-btn flex flex-col items-center p-2 text-slate-500 text-xs" data-tab="impian"><i class="fa-solid fa-rainbow text-lg"></i>Impian</button>
+        <button onclick="switchTab('ai')" class="mobile-nav-btn flex flex-col items-center p-2 text-slate-500 text-xs" data-tab="ai"><i class="fa-solid fa-robot text-lg"></i>AI</button>
+    </div>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-1 p-4 md:p-8 pb-24 md:pb-8 max-w-7xl mx-auto w-full overflow-y-auto">
+        
+        <!-- HEADER MOBILE -->
+        <header class="flex md:hidden justify-between items-center mb-6 pb-4 border-b border-slate-200 dark:border-slate-800">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-bold text-sm">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+                <h1 class="font-bold text-base">WALLET AJAIB</h1>
+            </div>
+            <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-sm">
+                <i class="fa-solid fa-moon dark:hidden"></i>
+                <i class="fa-solid fa-sun hidden dark:inline"></i>
+            </button>
+        </header>
+
+        <!-- ================= TAB: DASHBOARD ================= -->
+        <div id="tab-dashboard" class="tab-content space-y-6">
+            <div class="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-3xl p-6 md:p-8 text-white shadow-xl shadow-emerald-600/20 relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-white/10 rounded-full blur-2xl"></div>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative z-10">
+                    <div>
+                        <span class="text-xs uppercase tracking-wider bg-white/20 px-3 py-1 rounded-full font-semibold">Baki Tunai Semasa</span>
+                        <h2 class="text-3xl md:text-5xl font-extrabold mt-2" id="dash-baki-tunai">RM 0.00</h2>
+                        <p class="text-emerald-100 text-sm mt-1" id="dash-motivasi">"Urus Duit. Kawal Hutang. Simpan Impian. Bina Masa Depan."</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="openModal('pendapatan')" class="bg-white text-emerald-700 px-4 py-2.5 rounded-xl font-semibold text-sm hover:bg-emerald-50 transition shadow"><i class="fa-solid fa-plus mr-1"></i> Pendapatan</button>
+                        <button onclick="openModal('perbelanjaan')" class="bg-emerald-800 text-white px-4 py-2.5 rounded-xl font-semibold text-sm hover:bg-emerald-900 transition shadow"><i class="fa-solid fa-plus mr-1"></i> Belanja</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ringkasan Grid Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white dark:bg-charcoal-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <span class="text-xs text-slate-500 font-medium">Pendapatan Bulan Ini</span>
+                    <h3 class="text-xl font-bold text-emerald-600 mt-1" id="dash-pendapatan">RM 0.00</h3>
+                </div>
+                <div class="bg-white dark:bg-charcoal-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <span class="text-xs text-slate-500 font-medium">Perbelanjaan Bulan Ini</span>
+                    <h3 class="text-xl font-bold text-rose-600 mt-1" id="dash-perbelanjaan">RM 0.00</h3>
+                </div>
+                <div class="bg-white dark:bg-charcoal-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <span class="text-xs text-slate-500 font-medium">Jumlah Hutang Semasa</span>
+                    <h3 class="text-xl font-bold text-amber-600 mt-1" id="dash-hutang">RM 0.00</h3>
+                </div>
+                <div class="bg-white dark:bg-charcoal-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <span class="text-xs text-slate-500 font-medium">Jumlah Simpanan</span>
+                    <h3 class="text-xl font-bold text-teal-600 mt-1" id="dash-simpanan">RM 0.00</h3>
+                </div>
+            </div>
+
+            <!-- Extra Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white dark:bg-charcoal-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-xs text-slate-500 font-medium">Jumlah Tunggakan</span>
+                        <h4 class="text-lg font-bold text-rose-500" id="dash-tunggakan">RM 0.00</h4>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-500 flex items-center justify-center"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                </div>
+                <div class="bg-white dark:bg-charcoal-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-xs text-slate-500 font-medium">Komitmen Bulanan</span>
+                        <h4 class="text-lg font-bold text-blue-500" id="dash-komitmen">RM 0.00</h4>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-500 flex items-center justify-center"><i class="fa-solid fa-file-invoice"></i></div>
+                </div>
+                <div class="bg-white dark:bg-charcoal-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-xs text-slate-500 font-medium">Skor Kesihatan Kewangan</span>
+                        <h4 class="text-lg font-bold text-emerald-500" id="dash-skor">0 / 100</h4>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-500 flex items-center justify-center"><i class="fa-solid fa-heart-pulse"></i></div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white dark:bg-charcoal-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <h3 class="font-bold text-base mb-4">Carta Pendapatan vs Perbelanjaan</h3>
+                    <div class="h-64 flex items-center justify-center relative">
+                        <canvas id="chartPendapatanBelanja"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-charcoal-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <h3 class="font-bold text-base mb-4">Taburan Perbelanjaan Mengikut Kategori</h3>
+                    <div class="h-64 flex items-center justify-center relative">
+                        <canvas id="chartKategoriBelanja"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Transactions & Upcoming -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white dark:bg-charcoal-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <h3 class="font-bold text-base mb-4">Transaksi Terkini</h3>
+                    <div id="dash-transaksi-list" class="space-y-3">
+                        <p class="text-sm text-slate-500 text-center py-4">Tiada transaksi direkodkan lagi.</p>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-charcoal-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <h3 class="font-bold text-base mb-4">Pencapaian Menabung Terbaru</h3>
+                    <div id="dash-badge-list" class="space-y-3">
+                        <p class="text-sm text-slate-500 text-center py-4">Mula menabung untuk membuka lencana!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB: PENDAPATAN ================= -->
+        <div id="tab-pendapatan" class="tab-content hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-bold">Pengurusan Pendapatan</h2>
+                <button onclick="openModal('pendapatan')" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-emerald-700 transition"><i class="fa-solid fa-plus mr-1"></i> Tambah Pendapatan</button>
+            </div>
+            <div class="bg-white dark:bg-charcoal-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+                <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex gap-4">
+                    <input type="text" id="search-pendapatan" oninput="renderPendapatan()" placeholder="Cari pendapatan..." class="flex-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm focus:outline-none">
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-50 dark:bg-charcoal-800/50 text-slate-500 border-b border-slate-200 dark:border-slate-800">
+                                <th class="p-4 font-semibold">Nama</th>
+                                <th class="p-4 font-semibold">Kategori</th>
+                                <th class="p-4 font-semibold">Jumlah (RM)</th>
+                                <th class="p-4 font-semibold">Tarikh</th>
+                                <th class="p-4 font-semibold">Catatan</th>
+                                <th class="p-4 font-semibold text-right">Tindakan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-pendapatan-body">
+                            <tr><td colspan="6" class="p-4 text-center text-slate-500">Tiada rekod pendapatan.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB: PERBELANJAAN & BAJET ================= -->
+        <div id="tab-perbelanjaan" class="tab-content hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-bold">Perbelanjaan & Bajet Bulanan</h2>
+                <div class="flex gap-2">
+                    <button onclick="openModal('bajet')" class="bg-slate-200 dark:bg-slate-800 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-slate-300 transition">Tetapkan Bajet</button>
+                    <button onclick="openModal('perbelanjaan')" class="bg-rose-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-rose-700 transition"><i class="fa-solid fa-plus mr-1"></i> Tambah Belanja</button>
+                </div>
+            </div>
+
+            <!-- Bajet Progress Card -->
+            <div class="bg-white dark:bg-charcoal-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                <h3 class="font-bold text-base mb-4">Prestasi Bajet Bulan Ini</h3>
+                <div id="bajet-list-container" class="space-y-4">
+                    <p class="text-sm text-slate-500 text-center py-2">Tiada bajet ditetapkan lagi.</p>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-charcoal-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+                <div class="p-4 border-b border-slate-200 dark:border-slate-800">
+                    <input type="text" id="search-perbelanjaan" oninput="renderPerbelanjaan()" placeholder="Cari perbelanjaan..." class="w-full bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm focus:outline-none">
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-50 dark:bg-charcoal-800/50 text-slate-500 border-b border-slate-200 dark:border-slate-800">
+                                <th class="p-4 font-semibold">Nama</th>
+                                <th class="p-4 font-semibold">Kategori</th>
+                                <th class="p-4 font-semibold">Jumlah (RM)</th>
+                                <th class="p-4 font-semibold">Tarikh</th>
+                                <th class="p-4 font-semibold">Kaedah</th>
+                                <th class="p-4 font-semibold text-right">Tindakan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-perbelanjaan-body">
+                            <tr><td colspan="6" class="p-4 text-center text-slate-500">Tiada rekod perbelanjaan.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB: PENGURUSAN HUTANG ================= -->
+        <div id="tab-hutang" class="tab-content hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-bold">Pengurusan Hutang</h2>
+                    <p class="text-xs text-slate-500">Jejak baki hutang dan buat bayaran tanpa caj bertindih.</p>
+                </div>
+                <button onclick="openModal('hutang')" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-amber-700 transition"><i class="fa-solid fa-plus mr-1"></i> Tambah Hutang</button>
+            </div>
+            <div id="hutang-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <p class="text-sm text-slate-500">Tiada rekod hutang.</p>
+            </div>
+        </div>
+
+        <!-- ================= TAB: TUNGGAKAN ================= -->
+        <div id="tab-tunggakan" class="tab-content hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-bold">Tunggakan Pembayaran</h2>
+                    <p class="text-xs text-slate-500">Kawal bil tertunggak dan elakkan penalti.</p>
+                </div>
+                <button onclick="openModal('tunggakan')" class="bg-rose-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-rose-700 transition"><i class="fa-solid fa-plus mr-1"></i> Tambah Tunggakan</button>
+            </div>
+            <div id="tunggakan-list-container" class="space-y-4">
+                <p class="text-sm text-slate-500">Tiada tunggakan direkodkan.</p>
+            </div>
+        </div>
+
+        <!-- ================= TAB: KOMITMEN BULANAN ================= -->
+        <div id="tab-komitmen" class="tab-content hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-bold">Komitmen Bulanan</h2>
+                    <p class="text-xs text-slate-500">Bayaran tetap bulanan seperti sewa, utiliti dan ansuran.</p>
+                </div>
+                <button onclick="openModal('komitmen')" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-blue-700 transition"><i class="fa-solid fa-plus mr-1"></i> Tambah Komitmen</button>
+            </div>
+            <div id="komitmen-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <p class="text-sm text-slate-500">Tiada komitmen bulanan.</p>
+            </div>
+        </div>
+
+        <!-- ================= TAB: SIMPANAN & GAMIFIKASI ================= -->
+        <div id="tab-simpanan" class="tab-content hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-bold">Simpanan & Pencapaian Ajaib</h2>
+                    <p class="text-xs text-slate-500">Tabung simpanan, dana kecemasan & lencana gamifikasi.</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="openModal('tabung')" class="bg-slate-200 dark:bg-slate-800 px-4 py-2 rounded-xl text-sm font-semibold">Tambah Tabung</button>
+                    <button onclick="openModal('simpanan')" class="bg-teal-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-teal-700 transition"><i class="fa-solid fa-plus mr-1"></i> Simpan Duit</button>
+                </div>
+            </div>
+
+            <!-- Gamifikasi Badges Section -->
+            <div class="bg-white dark:bg-charcoal-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                <h3 class="font-bold text-base mb-4">Lencana Pencapaian Menabung</h3>
+                <div id="badges-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <!-- Badges injected via JS -->
+                </div>
+            </div>
+
+            <!-- Tabung Simpanan List -->
+            <div id="tabung-list-container" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Tabung injected via JS -->
+            </div>
+        </div>
+
+        <!-- ================= TAB: IMPIAN & PERANCANGAN ================= -->
+        <div id="tab-impian" class="tab-content hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-bold">🌈 Impian Saya & Idea Wang</h2>
+                    <p class="text-xs text-slate-500">Rancang masa depan, travel, perniagaan & strategi penggunaan wang.</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="openModal('idea')" class="bg-slate-200 dark:bg-slate-800 px-4 py-2 rounded-xl text-sm font-semibold">Tulis Idea Wang</button>
+                    <button onclick="openModal('impian')" class="bg-purple-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-purple-700 transition"><i class="fa-solid fa-plus mr-1"></i> Tambah Impian</button>
+                </div>
+            </div>
+
+            <div id="impian-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <p class="text-sm text-slate-500">Tiada impian direkodkan lagi.</p>
+            </div>
+
+            <div class="bg-white dark:bg-charcoal-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm mt-8">
+                <h3 class="font-bold text-base mb-4">Nota & Perancangan Penggunaan Wang</h3>
+                <div id="idea-list-container" class="space-y-3">
+                    <p class="text-sm text-slate-500">Tiada idea perancangan ditulis lagi.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB: AI WALLET ================= -->
+        <div id="tab-ai" class="tab-content hidden space-y-6">
+            <div class="bg-white dark:bg-charcoal-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col h-[75vh]">
+                <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold">AI Wallet Assistant</h3>
+                        <p class="text-xs text-slate-500">Teman Kewangan dan Idea Masa Depan Anda (Mod Offline Pintar)</p>
+                    </div>
+                </div>
+                <div id="ai-chat-box" class="flex-1 p-4 overflow-y-auto space-y-4">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs"><i class="fa-solid fa-robot"></i></div>
+                        <div class="bg-slate-100 dark:bg-charcoal-800 p-4 rounded-2xl text-sm max-w-md">
+                            Hai! Saya AI Wallet. Apa impian atau masalah kewangan yang ingin kita rancang hari ini? Anda boleh tanya saya tentang bajet, pelan hutang, atau idea perniagaan!
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 border-t border-slate-200 dark:border-slate-800 flex gap-2">
+                    <input type="text" id="ai-input" onkeypress="if(event.key==='Enter') sendAIMessage()" placeholder="Tanya sesuatu kepada AI Wallet..." class="flex-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none">
+                    <button onclick="sendAIMessage()" class="bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold text-sm hover:bg-emerald-700 transition">Hantar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB: KALENDAR BAYARAN ================= -->
+        <div id="tab-kalendar" class="tab-content hidden space-y-6">
+            <h2 class="text-xl font-bold">Kalendar Bayaran & Komitmen</h2>
+            <div class="bg-white dark:bg-charcoal-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div id="kalendar-view" class="space-y-4">
+                    <p class="text-sm text-slate-500">Senarai tarikh pembayaran komitmen, hutang dan tunggakan:</p>
+                    <div id="kalendar-list" class="space-y-2"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB: LAPORAN & KESIHATAN ================= -->
+        <div id="tab-laporan" class="tab-content hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-bold">Laporan Kewangan & Kesihatan</h2>
+                <div class="flex gap-2">
+                    <button onclick="exportJSON()" class="bg-slate-200 dark:bg-slate-800 px-4 py-2 rounded-xl text-sm font-semibold">Eksport Backup</button>
+                    <button onclick="window.print()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-semibold">Cetak Laporan</button>
+                </div>
+            </div>
+            
+            <div class="bg-white dark:bg-charcoal-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                <h3 class="font-bold text-base mb-2">Analisis Kesihatan Kewangan</h3>
+                <div id="kesihatan-analisis" class="space-y-3 text-sm text-slate-600 dark:text-slate-300">
+                    <p>Sila masukkan data pendapatan dan perbelanjaan untuk menjana analisis.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB: TETAPAN & BACKUP ================= -->
+        <div id="tab-tetapan" class="tab-content hidden space-y-6">
+            <h2 class="text-xl font-bold">Tetapan & Pengurusan Data</h2>
+            <div class="bg-white dark:bg-charcoal-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                <h3 class="font-bold text-base">Eksport & Import Data (Backup)</h3>
+                <p class="text-xs text-slate-500">Simpan fail sandaran data anda untuk mengelakkan kehilangan data apabila membersihkan pelayar.</p>
+                <div class="flex gap-4">
+                    <button onclick="exportJSON()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-semibold">Muat Turun Backup JSON</button>
+                    <label class="bg-slate-200 dark:bg-slate-800 px-4 py-2 rounded-xl text-sm font-semibold cursor-pointer hover:bg-slate-300 transition">
+                        Import Data JSON <input type="file" id="import-file" onchange="importJSON(event)" class="hidden" accept=".json">
+                    </label>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ================= MODAL FORMS ================= -->
+    <div id="app-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-charcoal-900 rounded-3xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-200 dark:border-slate-800">
+                <h3 id="modal-title" class="font-bold text-lg">Borang</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div id="modal-body">
+                <!-- Dynamic Form Injection -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // State Management
+        let db = {
+            pendapatan: JSON.parse(localStorage.getItem('wa_pendapatan')) || [],
+            perbelanjaan: JSON.parse(localStorage.getItem('wa_perbelanjaan')) || [],
+            hutang: JSON.parse(localStorage.getItem('wa_hutang')) || [],
+            tunggakan: JSON.parse(localStorage.getItem('wa_tunggakan')) || [],
+            komitmen: JSON.parse(localStorage.getItem('wa_komitmen')) || [],
+            bajet: JSON.parse(localStorage.getItem('wa_bajet')) || {},
+            tabung: JSON.parse(localStorage.getItem('wa_tabung')) || [
+                { id: 1, nama: 'Dana Kecemasan', baki: 0, sasaran: 5000 },
+                { id: 2, nama: 'Simpanan Am', baki: 0, sasaran: 1000 }
+            ],
+            simpananHist: JSON.parse(localStorage.getItem('wa_simpananHist')) || [],
+            impian: JSON.parse(localStorage.getItem('wa_impian')) || [],
+            idea: JSON.parse(localStorage.getItem('wa_idea')) || []
+        };
+
+        function saveData() {
+            localStorage.setItem('wa_pendapatan', JSON.stringify(db.pendapatan));
+            localStorage.setItem('wa_perbelanjaan', JSON.stringify(db.perbelanjaan));
+            localStorage.setItem('wa_hutang', JSON.stringify(db.hutang));
+            localStorage.setItem('wa_tunggakan', JSON.stringify(db.tunggakan));
+            localStorage.setItem('wa_komitmen', JSON.stringify(db.komitmen));
+            localStorage.setItem('wa_bajet', JSON.stringify(db.bajet));
+            localStorage.setItem('wa_tabung', JSON.stringify(db.tabung));
+            localStorage.setItem('wa_simpananHist', JSON.stringify(db.simpananHist));
+            localStorage.setItem('wa_impian', JSON.stringify(db.impian));
+            localStorage.setItem('wa_idea', JSON.stringify(db.idea));
+            updateAllUI();
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `px-4 py-3 rounded-xl text-white text-sm font-semibold shadow-lg transition transform translate-y-2 flex items-center gap-2 ${type === 'success' ? 'bg-emerald-600' : 'bg-rose-600'}`;
+            toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 3000);
+        }
+
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('wa_theme', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('wa_theme', 'dark');
+            }
+        }
+
+        if (localStorage.getItem('wa_theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-emerald-600', 'bg-emerald-50', 'dark:bg-emerald-950/40', 'dark:text-emerald-400');
+                btn.classList.add('text-slate-600', 'dark:text-slate-400');
+                if(btn.dataset.tab === tabId) {
+                    btn.classList.add('text-emerald-600', 'bg-emerald-50', 'dark:bg-emerald-950/40', 'dark:text-emerald-400');
+                    btn.classList.remove('text-slate-600', 'dark:text-slate-400');
+                }
+            });
+            updateAllUI();
+        }
+
+        let chartPBInstance = null;
+        let chartKBInstance = null;
+
+        function updateAllUI() {
+            renderDashboard();
+            renderPendapatan();
+            renderPerbelanjaan();
+            renderHutang();
+            renderTunggakan();
+            renderKomitmen();
+            renderSimpanan();
+            renderImpian();
+            renderKalendar();
+            renderLaporan();
+        }
+
+        // --- DASHBOARD ---
+        function renderDashboard() {
+            const totalPendapatan = db.pendapatan.reduce((acc, curr) => acc + Number(curr.jumlah), 0);
+            const totalPerbelanjaan = db.perbelanjaan.reduce((acc, curr) => acc + Number(curr.jumlah), 0);
+            const totalHutang = db.hutang.reduce((acc, curr) => acc + Number(curr.baki), 0);
+            const totalTunggakan = db.tunggakan.filter(t => t.status !== 'Selesai').reduce((acc, curr) => acc + Number(curr.baki), 0);
+            const totalKomitmen = db.komitmen.reduce((acc, curr) => acc + Number(curr.jumlah), 0);
+            const totalSimpanan = db.tabung.reduce((acc, curr) => acc + Number(curr.baki), 0);
+            const bakiTunai = totalPendapatan - totalPerbelanjaan - totalSimpanan - totalKomitmen;
+
+            document.getElementById('dash-baki-tunai').innerText = `RM ${bakiTunai.toFixed(2)}`;
+            document.getElementById('dash-pendapatan').innerText = `RM ${totalPendapatan.toFixed(2)}`;
+            document.getElementById('dash-perbelanjaan').innerText = `RM ${totalPerbelanjaan.toFixed(2)}`;
+            document.getElementById('dash-hutang').innerText = `RM ${totalHutang.toFixed(2)}`;
+            document.getElementById('dash-simpanan').innerText = `RM ${totalSimpanan.toFixed(2)}`;
+            document.getElementById('dash-tunggakan').innerText = `RM ${totalTunggakan.toFixed(2)}`;
+            document.getElementById('dash-komitmen').innerText = `RM ${totalKomitmen.toFixed(2)}`;
+
+            let skor = 100;
+            if (totalHutang > totalPendapatan) skor -= 30;
+            if (totalTunggakan > 0) skor -= 20;
+            if (totalPerbelanjaan > totalPendapatan) skor -= 30;
+            skor = Math.max(0, skor);
+            document.getElementById('dash-skor').innerText = `${skor} / 100`;
+
+            updateCharts(totalPendapatan, totalPerbelanjaan);
+            renderRecentTransactions();
+            renderBadges();
+        }
+
+        function updateCharts(pendapatan, perbelanjaan) {
+            const ctxPB = document.getElementById('chartPendapatanBelanja').getContext('2d');
+            if (chartPBInstance) chartPBInstance.destroy();
+            chartPBInstance = new Chart(ctxPB, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pendapatan', 'Perbelanjaan'],
+                    datasets: [{ data: [pendapatan, perbelanjaan], backgroundColor: ['#10b981', '#f43f5e'] }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            const catMap = {};
+            db.perbelanjaan.forEach(item => {
+                catMap[item.kategori] = (catMap[item.kategori] || 0) + Number(item.jumlah);
+            });
+            const ctxKB = document.getElementById('chartKategoriBelanja').getContext('2d');
+            if (chartKBInstance) chartKBInstance.destroy();
+            chartKBInstance = new Chart(ctxKB, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(catMap),
+                    datasets: [{ label: 'RM', data: Object.values(catMap), backgroundColor: '#059669' }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        function renderRecentTransactions() {
+            const container = document.getElementById('dash-transaksi-list');
+            const combined = [
+                ...db.pendapatan.map(p => ({...p, jenis: 'Pendapatan', warna: 'text-emerald-600'})),
+                ...db.perbelanjaan.map(p => ({...p, jenis: 'Perbelanjaan', warna: 'text-rose-600'}))
+            ].sort((a,b) => new Date(b.tarikh) - new Date(a.tarikh)).slice(0, 5);
+
+            if (combined.length === 0) {
+                container.innerHTML = '<p class="text-sm text-slate-500 text-center py-4">Tiada transaksi direkodkan lagi.</p>';
+                return;
+            }
+
+            container.innerHTML = combined.map(t => `
+                <div class="flex justify-between items-center p-3 rounded-xl bg-slate-50 dark:bg-charcoal-800">
+                    <div>
+                        <h4 class="font-semibold text-sm">${t.nama}</h4>
+                        <span class="text-xs text-slate-500">${t.kategori} • ${t.tarikh}</span>
+                    </div>
+                    <span class="font-bold text-sm ${t.warna}">${t.jenis === 'Pendapatan' ? '+' : '-'}RM ${Number(t.jumlah).toFixed(2)}</span>
+                </div>
+            `).join('');
+        }
+
+        // --- PENDAPATAN ---
+        function renderPendapatan() {
+            const query = document.getElementById('search-pendapatan')?.value.toLowerCase() || '';
+            const tbody = document.getElementById('table-pendapatan-body');
+            const filtered = db.pendapatan.filter(p => p.nama.toLowerCase().includes(query) || p.kategori.toLowerCase().includes(query));
+
+            if(filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-500">Tiada rekod pendapatan.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map((p, index) => `
+                <tr class="border-b border-slate-100 dark:border-slate-800">
+                    <td class="p-4 font-medium">${p.nama}</td>
+                    <td class="p-4"><span class="px-2.5 py-1 rounded-full text-xs bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">${p.kategori}</span></td>
+                    <td class="p-4 font-bold text-emerald-600">RM ${Number(p.jumlah).toFixed(2)}</td>
+                    <td class="p-4 text-slate-500">${p.tarikh}</td>
+                    <td class="p-4 text-slate-500">${p.catatan || '-'}</td>
+                    <td class="p-4 text-right">
+                        <button onclick="deleteItem('pendapatan', ${index})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // --- PERBELANJAAN & BAJET ---
+        function renderPerbelanjaan() {
+            const query = document.getElementById('search-perbelanjaan')?.value.toLowerCase() || '';
+            const tbody = document.getElementById('table-perbelanjaan-body');
+            const filtered = db.perbelanjaan.filter(p => p.nama.toLowerCase().includes(query) || p.kategori.toLowerCase().includes(query));
+
+            if(filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-500">Tiada rekod perbelanjaan.</td></tr>';
+            } else {
+                tbody.innerHTML = filtered.map((p, index) => `
+                    <tr class="border-b border-slate-100 dark:border-slate-800">
+                        <td class="p-4 font-medium">${p.nama}</td>
+                        <td class="p-4"><span class="px-2.5 py-1 rounded-full text-xs bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300">${p.kategori}</span></td>
+                        <td class="p-4 font-bold text-rose-600">RM ${Number(p.jumlah).toFixed(2)}</td>
+                        <td class="p-4 text-slate-500">${p.tarikh}</td>
+                        <td class="p-4 text-slate-500">${p.kaedah || 'Tunai'}</td>
+                        <td class="p-4 text-right">
+                            <button onclick="deleteItem('perbelanjaan', ${index})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            const bajetContainer = document.getElementById('bajet-list-container');
+            if(Object.keys(db.bajet).length === 0) {
+                bajetContainer.innerHTML = '<p class="text-sm text-slate-500 text-center py-2">Tiada bajet ditetapkan lagi.</p>';
+                return;
+            }
+
+            bajetContainer.innerHTML = Object.entries(db.bajet).map(([kat, max]) => {
+                const used = db.perbelanjaan.filter(p => p.kategori === kat).reduce((acc, curr) => acc + Number(curr.jumlah), 0);
+                const pct = Math.min(100, (used / max) * 100);
+                let color = 'bg-emerald-600';
+                if(pct >= 80) color = 'bg-amber-500';
+                if(pct >= 100) color = 'bg-rose-600';
+
+                return `
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="font-medium">${kat}</span>
+                            <span class="text-slate-500">RM ${used.toFixed(2)} / RM ${Number(max).toFixed(2)} (${pct.toFixed(0)}%)</span>
+                        </div>
+                        <div class="w-full bg-slate-100 dark:bg-charcoal-800 h-2.5 rounded-full overflow-hidden">
+                            <div class="${color} h-2.5 rounded-full" style="width: ${pct}%"></div>
+                        </div>
+                        ${pct >= 80 ? `<span class="text-xs text-rose-500 font-semibold mt-1 inline-block">Amaran: Bajet hampir atau melebihi had!</span>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // --- HUTANG ---
+        function renderHutang() {
+            const container = document.getElementById('hutang-list-container');
+            if(db.hutang.length === 0) {
+                container.innerHTML = '<p class="text-sm text-slate-500">Tiada rekod hutang.</p>';
+                return;
+            }
+
+            container.innerHTML = db.hutang.map((h, index) => `
+                <div class="bg-white dark:bg-charcoal-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-bold">${h.nama}</h4>
+                            <span class="text-xs text-slate-500">${h.jenis} • Ansuran: RM ${h.ansuran}</span>
+                        </div>
+                        <button onclick="deleteItem('hutang', ${index})" class="text-rose-500 text-sm"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span>Baki: <strong class="text-amber-600">RM ${Number(h.baki).toFixed(2)}</strong></span>
+                        <span>Asal: RM ${Number(h.asal).toFixed(2)}</span>
+                    </div>
+                    <button onclick="bayarHutang(${index})" class="w-full bg-amber-500/10 text-amber-600 hover:bg-amber-500 hover:text-white py-2 rounded-xl text-sm font-semibold transition">Buat Bayaran Ansuran</button>
+                </div>
+            `).join('');
+        }
+
+        function bayarHutang(index) {
+            let h = db.hutang[index];
+            let bayar = prompt(`Masukkan jumlah bayaran untuk ${h.nama} (Ansuran: RM ${h.ansuran}):`, h.ansuran);
+            if(bayar && !isNaN(bayar)) {
+                h.baki = Math.max(0, h.baki - Number(bayar));
+                if(h.baki === 0) {
+                    showToast(`Hutang ${h.nama} telah selesai dijelaskan!`);
+                } else {
+                    showToast(`Bayaran sebanyak RM ${bayar} direkodkan.`);
+                }
+                saveData();
+            }
+        }
+
+        // --- TUNGGAKAN ---
+        function renderTunggakan() {
+            const container = document.getElementById('tunggakan-list-container');
+            if(db.tunggakan.length === 0) {
+                container.innerHTML = '<p class="text-sm text-slate-500">Tiada tunggakan direkodkan.</p>';
+                return;
+            }
+
+            container.innerHTML = db.tunggakan.map((t, index) => `
+                <div class="bg-white dark:bg-charcoal-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex justify-between items-center">
+                    <div>
+                        <h4 class="font-bold">${t.nama}</h4>
+                        <span class="text-xs text-slate-500">Tarikh Akhir: ${t.tarikhAkhir} • Status: <strong class="${t.status === 'Selesai' ? 'text-emerald-500' : 'text-rose-500'}">${t.status}</strong></span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="font-bold text-rose-600">RM ${Number(t.baki).toFixed(2)}</span>
+                        <button onclick="selesaiTunggakan(${index})" class="bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-xs font-semibold">Tandai Selesai</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selesaiTunggakan(index) {
+            db.tunggakan[index].status = 'Selesai';
+            db.tunggakan[index].baki = 0;
+            showToast('Tunggakan ditandakan selesai.');
+            saveData();
+        }
+
+        // --- KOMITMEN ---
+        function renderKomitmen() {
+            const container = document.getElementById('komitmen-list-container');
+            if(db.komitmen.length === 0) {
+                container.innerHTML = '<p class="text-sm text-slate-500">Tiada komitmen bulanan.</p>';
+                return;
+            }
+
+            container.innerHTML = db.komitmen.map((k, index) => `
+                <div class="bg-white dark:bg-charcoal-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex justify-between items-center">
+                    <div>
+                        <h4 class="font-bold">${k.nama}</h4>
+                        <span class="text-xs text-slate-500">${k.jenis} • Tarikh Bayar: ${k.tarikh}hb</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="font-bold text-blue-600">RM ${Number(k.jumlah).toFixed(2)}</span>
+                        <button onclick="deleteItem('komitmen', ${index})" class="text-rose-500"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // --- SIMPANAN & GAMIFIKASI ---
+        function renderSimpanan() {
+            const container = document.getElementById('tabung-list-container');
+            container.innerHTML = db.tabung.map((t, index) => {
+                const pct = Math.min(100, (t.baki / t.sasaran) * 100);
+                return `
+                    <div class="bg-white dark:bg-charcoal-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                        <div class="flex justify-between items-center">
+                            <h4 class="font-bold">${t.nama}</h4>
+                            <span class="text-xs text-teal-600 font-semibold">${pct.toFixed(0)}%</span>
+                        </div>
+                        <div class="text-2xl font-extrabold text-teal-600">RM ${Number(t.baki).toFixed(2)}</div>
+                        <div class="w-full bg-slate-100 dark:bg-charcoal-800 h-2 rounded-full overflow-hidden">
+                            <div class="bg-teal-600 h-2 rounded-full" style="width: ${pct}%"></div>
+                        </div>
+                        <span class="text-xs text-slate-500">Sasaran: RM ${Number(t.sasaran).toFixed(2)}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderBadges() {
+            const totalSimpanan = db.tabung.reduce((acc, curr) => acc + Number(curr.baki), 0);
+            const badges = [
+                { title: 'Simpanan Pertama', min: 10, icon: '🐣' },
+                { title: 'Penabung Permulaan', min: 100, icon: '🌱' },
+                { title: 'Penabung Hebat', min: 500, icon: '🥉' },
+                { title: 'Penabung Konsisten', min: 1000, icon: '🥈' },
+                { title: 'Penabung Luar Biasa', min: 5000, icon: '🥇' },
+                { title: 'Simpanan Impian', min: 10000, icon: '💎' },
+            ];
+
+            const grid = document.getElementById('badges-grid');
+            grid.innerHTML = badges.map(b => {
+                const unlocked = totalSimpanan >= b.min;
+                return `
+                    <div class="p-4 rounded-2xl border ${unlocked ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30' : 'border-slate-200 dark:border-slate-800 opacity-50'} flex flex-col items-center text-center">
+                        <span class="text-3xl mb-2">${b.icon}</span>
+                        <h4 class="font-bold text-xs">${b.title}</h4>
+                        <span class="text-[10px] text-slate-500 mt-1">Min: RM ${b.min}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // --- IMPIAN & IDEA ---
+        function renderImpian() {
+            const container = document.getElementById('impian-list-container');
+            if(db.impian.length === 0) {
+                container.innerHTML = '<p class="text-sm text-slate-500">Tiada impian direkodkan lagi.</p>';
+            } else {
+                container.innerHTML = db.impian.map((i, index) => {
+                    const pct = Math.min(100, (i.terkumpul / i.sasaran) * 100);
+                    return `
+                        <div class="bg-white dark:bg-charcoal-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-bold text-base">${i.nama}</h4>
+                                    <span class="text-xs text-purple-600 font-semibold">${i.kategori}</span>
+                                </div>
+                                <button onclick="deleteItem('impian', ${index})" class="text-rose-500"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                            <p class="text-xs text-slate-500">${i.penerangan || '-'}</p>
+                            <div class="flex justify-between text-sm">
+                                <span>Terkumpul: <strong>RM ${Number(i.terkumpul).toFixed(2)}</strong></span>
+                                <span>Sasaran: RM ${Number(i.sasaran).toFixed(2)}</span>
+                            </div>
+                            <div class="w-full bg-slate-100 dark:bg-charcoal-800 h-2 rounded-full overflow-hidden">
+                                <div class="bg-purple-600 h-2 rounded-full" style="width: ${pct}%"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            const ideaContainer = document.getElementById('idea-list-container');
+            if(db.idea.length === 0) {
+                ideaContainer.innerHTML = '<p class="text-sm text-slate-500">Tiada idea perancangan ditulis lagi.</p>';
+            } else {
+                ideaContainer.innerHTML = db.idea.map((id, index) => `
+                    <div class="p-4 rounded-xl bg-slate-50 dark:bg-charcoal-800 flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold text-sm">${id.nama}</h4>
+                            <p class="text-xs text-slate-500">Anggaran Modal: RM ${id.modal} • ${id.nota}</p>
+                        </div>
+                        <button onclick="deleteItem('idea', ${index})" class="text-rose-500 text-sm"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // --- AI WALLET CHATBOT ---
+        function sendAIMessage() {
+            const input = document.getElementById('ai-input');
+            const text = input.value.trim();
+            if(!text) return;
+
+            const chatBox = document.getElementById('ai-chat-box');
+            chatBox.innerHTML += `
+                <div class="flex items-start justify-end gap-3">
+                    <div class="bg-emerald-600 text-white p-4 rounded-2xl text-sm max-w-md">${text}</div>
+                </div>
+            `;
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            setTimeout(() => {
+                let reply = "Saya sedang menganalisis data kewangan anda... Pastikan anda merekodkan pendapatan dan perbelanjaan dengan teratur untuk saya beri cadangan terbaik!";
+                const lower = text.toLowerCase();
+                
+                if(lower.includes('bajet') || lower.includes('belanja')) {
+                    const totalP = db.pendapatan.reduce((a,c)=>a+Number(c.jumlah),0);
+                    const totalB = db.perbelanjaan.reduce((a,c)=>a+Number(c.jumlah),0);
+                    reply = `Berdasarkan rekod anda, jumlah pendapatan ialah RM ${totalP.toFixed(2)} dan perbelanjaan ialah RM ${totalB.toFixed(2)}. Pastikan perbelanjaan tidak melebihi 70% pendapatan anda!`;
+                } else if(lower.includes('hutang')) {
+                    const totalH = db.hutang.reduce((a,c)=>a+Number(c.baki),0);
+                    reply = `Jumlah baki hutang semasa anda ialah RM ${totalH.toFixed(2)}. Gunakan kaedah 'Debt Snowball' atau 'Avalanche' untuk selesaikannya dengan pantas.`;
+                } else if(lower.includes('impian') || lower.includes('travel') || lower.includes('bisnes')) {
+                    reply = `Hebat! Untuk mencapai impian anda, tetapkan potongan automatik ke dalam tabung simpanan setiap kali gaji diterima. Konsistensi adalah kunci!`;
+                }
+
+                chatBox.innerHTML += `
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs"><i class="fa-solid fa-robot"></i></div>
+                        <div class="bg-slate-100 dark:bg-charcoal-800 p-4 rounded-2xl text-sm max-w-md">${reply}</div>
+                    </div>
+                `;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 800);
+        }
+
+        // --- KALENDAR & LAPORAN ---
+        function renderKalendar() {
+            const container = document.getElementById('kalendar-list');
+            let items = [
+                ...db.komitmen.map(k => ({nama: `Komitmen: ${k.nama}`, tarikh: `${k.tarikh}hb`, jumlah: k.jumlah})),
+                ...db.tunggakan.map(t => ({nama: `Tunggakan: ${t.nama}`, tarikh: t.tarikhAkhir, jumlah: t.baki}))
+            ];
+
+            if(items.length === 0) {
+                container.innerHTML = '<p class="text-sm text-slate-500">Tiada jadual bayaran terdekat.</p>';
+                return;
+            }
+
+            container.innerHTML = items.map(i => `
+                <div class="p-3 bg-slate-50 dark:bg-charcoal-800 rounded-xl flex justify-between text-sm">
+                    <span>${i.nama} (${i.tarikh})</span>
+                    <strong class="text-rose-600">RM ${Number(i.jumlah).toFixed(2)}</strong>
+                </div>
+            `).join('');
+        }
+
+        function renderLaporan() {
+            const totalP = db.pendapatan.reduce((a,c)=>a+Number(c.jumlah),0);
+            const totalB = db.perbelanjaan.reduce((a,c)=>a+Number(c.jumlah),0);
+            const container = document.getElementById('kesihatan-analisis');
+            container.innerHTML = `
+                <p><strong>Jumlah Pendapatan Keseluruhan:</strong> RM ${totalP.toFixed(2)}</p>
+                <p><strong>Jumlah Perbelanjaan Keseluruhan:</strong> RM ${totalB.toFixed(2)}</p>
+                <p><strong>Baki Bersih:</strong> RM ${(totalP - totalB).toFixed(2)}</p>
+                <p class="text-emerald-600 font-semibold mt-2">Cadangan: Teruskan menabung sekurang-kurangnya 20% daripada pendapatan bulanan anda ke dalam tabung kecemasan.</p>
+            `;
+        }
+
+        // --- MODAL SYSTEM ---
+        function openModal(type) {
+            const modal = document.getElementById('app-modal');
+            const title = document.getElementById('modal-title');
+            const body = document.getElementById('modal-body');
+            modal.classList.remove('hidden');
+
+            if(type === 'pendapatan') {
+                title.innerText = 'Tambah Pendapatan Baru';
+                body.innerHTML = `
+                    <form onsubmit="addPendapatan(event)" class="space-y-4">
+                        <div><label class="text-xs font-semibold">Nama Pendapatan</label><input type="text" id="p-nama" required class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <div><label class="text-xs font-semibold">Kategori</label><select id="p-kat" class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"><option>Gaji</option><option>Perniagaan</option><option>Freelance</option><option>Komisen</option><option>Lain-lain</option></select></div>
+                        <div><label class="text-xs font-semibold">Jumlah (RM)</label><input type="number" step="0.01" id="p-jumlah" required class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <div><label class="text-xs font-semibold">Tarikh</label><input type="date" id="p-tarikh" required class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <div><label class="text-xs font-semibold">Catatan</label><input type="text" id="p-catatan" class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-semibold text-sm">Simpan Pendapatan</button>
+                    </form>
+                `;
+            } else if(type === 'perbelanjaan') {
+                title.innerText = 'Tambah Perbelanjaan Baru';
+                body.innerHTML = `
+                    <form onsubmit="addPerbelanjaan(event)" class="space-y-4">
+                        <div><label class="text-xs font-semibold">Nama Perbelanjaan</label><input type="text" id="b-nama" required class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <div><label class="text-xs font-semibold">Kategori</label><select id="b-kat" class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"><option>Makanan</option><option>Barang Dapur</option><option>Pengangkutan</option><option>Bil Elektrik</option><option>Internet</option><option>Hiburan</option><option>Lain-lain</option></select></div>
+                        <div><label class="text-xs font-semibold">Jumlah (RM)</label><input type="number" step="0.01" id="b-jumlah" required class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <div><label class="text-xs font-semibold">Tarikh</label><input type="date" id="b-tarikh" required class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <button type="submit" class="w-full bg-rose-600 text-white py-3 rounded-xl font-semibold text-sm">Simpan Perbelanjaan</button>
+                    </form>
+                `;
+            } else if(type === 'hutang') {
+                title.innerText = 'Tambah Hutang Baru';
+                body.innerHTML = `
+                    <form onsubmit="addHutang(event)" class="space-y-4">
+                        <div><label class="text-xs font-semibold">Nama Pemberi Hutang / Pinjaman</label><input type="text" id="h-nama" required class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <div><label class="text-xs font-semibold">Jenis</label><select id="h-jenis" class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"><option>Pinjaman Peribadi</option><option>Kad Kredit</option><option>Pinjaman Kenderaan</option><option>Pinjaman Rumah</option><option>PTPTN</option></select></div>
+                        <div><label class="text-xs font-semibold">Jumlah Asal (RM)</label><input type="number" step="0.01" id="h-asal" required class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <div><label class="text-xs font-semibold">Baki Semasa (RM)</label><input type="number" step="0.01" id="h-baki" required class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <div><label class="text-xs font-semibold">Ansuran Bulanan (RM)</label><input type="number" step="0.01" id="h-ansuran" required class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <button type="submit" class="w-full bg-amber-600 text-white py-3 rounded-xl font-semibold text-sm">Simpan Hutang</button>
+                    </form>
+                `;
+            } else if(type === 'tunggakan') {
+                title.innerText = 'Tambah Tunggakan Baru';
+                body.innerHTML = `
+                    <form onsubmit="addTunggakan(event)" class="space-y-4">
+                        <div><label class="text-xs font-semibold">Nama Bil / Tunggakan</label><input type="text" id="t-nama" required class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <div><label class="text-xs font-semibold">Jumlah Baki (RM)</label><input type="number" step="0.01" id="t-baki" required class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <div><label class="text-xs font-semibold">Tarikh Akhir</label><input type="date" id="t-tarikh" required class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <button type="submit" class="w-full bg-rose-600 text-white py-3 rounded-xl font-semibold text-sm">Simpan Tunggakan</button>
+                    </form>
+                `;
+            } else if(type === 'komitmen') {
+                title.innerText = 'Tambah Komitmen Bulanan';
+                body.innerHTML = `
+                    <form onsubmit="addKomitmen(event)" class="space-y-4">
+                        <div><label class="text-xs font-semibold">Nama Komitmen</label><input type="text" id="k-nama" required class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <div><label class="text-xs font-semibold">Jenis</label><select id="k-jenis" class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"><option>Rumah / Sewa</option><option>Kenderaan</option><option>Utiliti</option><option>Insurans</option><option>Lain-lain</option></select></div>
+                        <div><label class="text-xs font-semibold">Jumlah Bayaran (RM)</label><input type="number" step="0.01" id="k-jumlah" required class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <div><label class="text-xs font-semibold">Tarikh Perlu Bayar (1-31 hb)</label><input type="number" min="1" max="31" id="k-tarikh" required class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold text-sm">Simpan Komitmen</button>
+                    </form>
+                `;
+            } else if(type === 'tabung') {
+                title.innerText = 'Tambah Tabung Simpanan';
+                body.innerHTML = `
+                    <form onsubmit="addTabung(event)" class="space-y-4">
+                        <div><label class="text-xs font-semibold">Nama Tabung</label><input type="text" id="tb-nama" required class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <div><label class="text-xs font-semibold">Sasaran (RM)</label><input type="number" step="0.01" id="tb-sasaran" required class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <button type="submit" class="w-full bg-teal-600 text-white py-3 rounded-xl font-semibold text-sm">Simpan Tabung</button>
+                    </form>
+                `;
+            } else if(type === 'simpanan') {
+                title.innerText = 'Tambah Simpanan ke Tabung';
+                let options = db.tabung.map(t => `<option value="${t.id}">${t.nama} (Baki: RM ${t.baki})</option>`).join('');
+                body.innerHTML = `
+                    <form onsubmit="doSimpanan(event)" class="space-y-4">
+                        <div><label class="text-xs font-semibold">Pilih Tabung</label><select id="s-tabung" class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm">${options}</select></div>
+                        <div><label class="text-xs font-semibold">Jumlah Simpanan (RM)</label><input type="number" step="0.01" id="s-jumlah" required class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <button type="submit" class="w-full bg-teal-600 text-white py-3 rounded-xl font-semibold text-sm">Tambah Simpanan</button>
+                    </form>
+                `;
+            } else if(type === 'impian') {
+                title.innerText = 'Tambah Impian Baru';
+                body.innerHTML = `
+                    <form onsubmit="addImpian(event)" class="space-y-4">
+                        <div><label class="text-xs font-semibold">Nama Impian</label><input type="text" id="i-nama" required class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <div><label class="text-xs font-semibold">Kategori</label><select id="i-kat" class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"><option>Travel</option><option>Perniagaan</option><option>Rumah</option><option>Kereta</option><option>Pendidikan</option><option>Lain-lain</option></select></div>
+                        <div><label class="text-xs font-semibold">Sasaran Kos (RM)</label><input type="number" step="0.01" id="i-sasaran" required class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <div><label class="text-xs font-semibold">Penerangan</label><input type="text" id="i-penerangan" class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <button type="submit" class="w-full bg-purple-600 text-white py-3 rounded-xl font-semibold text-sm">Simpan Impian</button>
+                    </form>
+                `;
+            } else if(type === 'idea') {
+                title.innerText = 'Tulis Idea Perancangan Wang';
+                body.innerHTML = `
+                    <form onsubmit="addIdea(event)" class="space-y-4">
+                        <div><label class="text-xs font-semibold">Nama Projek / Idea</label><input type="text" id="id-nama" required class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <div><label class="text-xs font-semibold">Anggaran Modal (RM)</label><input type="number" step="0.01" id="id-modal" required class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <div><label class="text-xs font-semibold">Nota Peribadi</label><input type="text" id="id-nota" class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <button type="submit" class="w-full bg-slate-800 text-white py-3 rounded-xl font-semibold text-sm">Simpan Idea</button>
+                    </form>
+                `;
+            } else if(type === 'bajet') {
+                title.innerText = 'Tetapkan Bajet Bulanan';
+                body.innerHTML = `
+                    <form onsubmit="saveBajet(event)" class="space-y-4">
+                        <div><label class="text-xs font-semibold">Kategori</label><select id="bj-kat" class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"><option>Makanan</option><option>Barang Dapur</option><option>Pengangkutan</option><option>Bil Elektrik</option><option>Internet</option><option>Hiburan</option><option>Lain-lain</option></select></div>
+                        <div><label class="text-xs font-semibold">Had Maksimum (RM)</label><input type="number" step="0.01" id="bj-jumlah" required class="w-full mt-1 bg-slate-50 dark:bg-charcoal-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm"></div>
+                        <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-semibold text-sm">Tetapkan Bajet</button>
+                    </form>
+                `;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('app-modal').classList.add('hidden');
+        }
+
+        // --- SUBMIT HANDLERS ---
+        function addPendapatan(e) {
+            e.preventDefault();
+            db.pendapatan.push({
+                nama: document.getElementById('p-nama').value,
+                kategori: document.getElementById('p-kat').value,
+                jumlah: document.getElementById('p-jumlah').value,
+                tarikh: document.getElementById('p-tarikh').value,
+                catatan: document.getElementById('p-catatan').value
+            });
+            closeModal();
+            showToast('Pendapatan berjaya ditambah!');
+            saveData();
+        }
+
+        function addPerbelanjaan(e) {
+            e.preventDefault();
+            db.perbelanjaan.push({
+                nama: document.getElementById('b-nama').value,
+                kategori: document.getElementById('b-kat').value,
+                jumlah: document.getElementById('b-jumlah').value,
+                tarikh: document.getElementById('b-tarikh').value
+            });
+            closeModal();
+            showToast('Perbelanjaan berjaya ditambah!');
+            saveData();
+        }
+
+        function addHutang(e) {
+            e.preventDefault();
+            db.hutang.push({
+                nama: document.getElementById('h-nama').value,
+                jenis: document.getElementById('h-jenis').value,
+                asal: document.getElementById('h-asal').value,
+                baki: document.getElementById('h-baki').value,
+                ansuran: document.getElementById('h-ansuran').value
+            });
+            closeModal();
+            showToast('Hutang berjaya ditambah!');
+            saveData();
+        }
+
+        function addTunggakan(e) {
+            e.preventDefault();
+            db.tunggakan.push({
+                nama: document.getElementById('t-nama').value,
+                baki: document.getElementById('t-baki').value,
+                tarikhAkhir: document.getElementById('t-tarikh').value,
+                status: 'Belum Bayar'
+            });
+            closeModal();
+            showToast('Tunggakan berjaya ditambah!');
+            saveData();
+        }
+
+        function addKomitmen(e) {
+            e.preventDefault();
+            db.komitmen.push({
+                nama: document.getElementById('k-nama').value,
+                jenis: document.getElementById('k-jenis').value,
+                jumlah: document.getElementById('k-jumlah').value,
+                tarikh: document.getElementById('k-tarikh').value
+            });
+            closeModal();
+            showToast('Komitmen berjaya ditambah!');
+            saveData();
+        }
+
+        function addTabung(e) {
+            e.preventDefault();
+            db.tabung.push({
+                id: Date.now(),
+                nama: document.getElementById('tb-nama').value,
+                baki: 0,
+                sasaran: document.getElementById('tb-sasaran').value
+            });
+            closeModal();
+            showToast('Tabung baru berjaya dicipta!');
+            saveData();
+        }
+
+        function doSimpanan(e) {
+            e.preventDefault();
+            const tabungId = Number(document.getElementById('s-tabung').value);
+            const jumlah = Number(document.getElementById('s-jumlah').value);
+            const tabung = db.tabung.find(t => t.id === tabungId);
+            if(tabung) {
+                tabung.baki += jumlah;
+                closeModal();
+                showToast(`RM ${jumlah} berjaya disimpan ke dalam ${tabung.nama}!`);
+                saveData();
+            }
+        }
+
+        function addImpian(e) {
+            e.preventDefault();
+            db.impian.push({
+                nama: document.getElementById('i-nama').value,
+                kategori: document.getElementById('i-kat').value,
+                sasaran: document.getElementById('i-sasaran').value,
+                penerangan: document.getElementById('i-penerangan').value,
+                terkumpul: 0
+            });
+            closeModal();
+            showToast('Impian baru berjaya direkodkan!');
+            saveData();
+        }
+
+        function addIdea(e) {
+            e.preventDefault();
+            db.idea.push({
+                nama: document.getElementById('id-nama').value,
+                modal: document.getElementById('id-modal').value,
+                nota: document.getElementById('id-nota').value
+            });
+            closeModal();
+            showToast('Idea perancangan disimpan!');
+            saveData();
+        }
+
+        function saveBajet(e) {
+            e.preventDefault();
+            const kat = document.getElementById('bj-kat').value;
+            const jumlah = document.getElementById('bj-jumlah').value;
+            db.bajet[kat] = jumlah;
+            closeModal();
+            showToast('Bajet bulanan dikemas kini!');
+            saveData();
+        }
+
+        function deleteItem(type, index) {
+            if(confirm('Adakah anda pasti mahu memadam rekod ini?')) {
+                db[type].splice(index, 1);
+                showToast('Rekod dipadam.');
+                saveData();
+            }
+        }
+
+        // --- BACKUP & EXPORT JSON ---
+        function exportJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", "wallet_ajaib_backup.json");
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+            showToast('Fail backup berjaya dimuat turun!');
+        }
+
+        function importJSON(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    db = parsed;
+                    saveData();
+                    showToast('Data berjaya diimport!');
+                } catch(err) {
+                    showToast('Fail JSON tidak sah.', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Initial Load
+        updateAllUI();
+    </script>
+</body>
+</html>
